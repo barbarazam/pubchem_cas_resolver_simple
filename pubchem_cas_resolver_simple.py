@@ -16,11 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 def fetch(url):
-    # try 3 times before giving up
     for attempt in range(1, 4):
         try:
             response = requests.get(url, timeout=10)
-            time.sleep(0.25)  # PubChem allows max 5 requests per second
+            time.sleep(0.25)
             return response
         except requests.RequestException:
             logger.warning(f"request failed (attempt {attempt}/3), retrying...")
@@ -30,6 +29,7 @@ def fetch(url):
 
 
 def get_cas_number(chemical_name):
+
     # ask PubChem for the compound ID of this name
     url      = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{chemical_name}/cids/TXT"
     response = fetch(url)
@@ -62,7 +62,8 @@ def get_cas_number(chemical_name):
 
 def process_file(input_path, output_dir):
     filename = os.path.basename(input_path)
-
+   
+    # read input and resolve each name
     file    = open(input_path, newline="", encoding="utf-8")
     reader  = csv.DictReader(file)
     headers = list(reader.fieldnames)
@@ -75,6 +76,7 @@ def process_file(input_path, output_dir):
         output_rows.append(row)
     file.close()
 
+    # write results to the output folder
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, filename)
 
@@ -88,6 +90,7 @@ def process_file(input_path, output_dir):
 
 
 def main():
+    # read folder paths from the command line
     parser = argparse.ArgumentParser(
         description="Resolve chemical names to CAS numbers using PubChem."
     )
@@ -95,6 +98,7 @@ def main():
     parser.add_argument("--output-dir", "-o", default="output", help="folder for output CSV files")
     args = parser.parse_args()
 
+    # process all CSV files found in the input folder
     csv_files = [f for f in os.listdir(args.input_dir) if f.endswith(".csv")]
     for filename in sorted(csv_files):
         logger.info(f"processing: {filename}")
