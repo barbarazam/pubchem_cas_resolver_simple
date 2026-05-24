@@ -66,7 +66,8 @@ def get_cas_number(chemical_name):
 
 def process_file(input_path, output_dir):
     filename = os.path.basename(input_path)
-
+   
+    # read input and resolve each name
     file    = open(input_path, newline="", encoding="utf-8")
     reader  = csv.DictReader(file)
     headers = list(reader.fieldnames)
@@ -79,6 +80,7 @@ def process_file(input_path, output_dir):
         output_rows.append(row)
     file.close()
 
+    # write results to the output folder
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, filename)
 
@@ -92,6 +94,7 @@ def process_file(input_path, output_dir):
 
 
 def main():
+    # read folder paths from the command line
     parser = argparse.ArgumentParser(
         description="Resolve chemical names to CAS numbers using PubChem."
     )
