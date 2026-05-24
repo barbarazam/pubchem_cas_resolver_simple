@@ -1,3 +1,4 @@
+#re is Python's pattern-matching module. requests is the library that sends HTTP requests to PubChem over the internet.
 import re
 import requests
 
